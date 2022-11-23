@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package v1;
+
+option go_package = "base/api/user/v1;v1";
+import "validate/validate.proto";
+import "api/page/page.proto";
+import "google/api/annotations.proto";
+
+service User {
+	rpc CreateUser (CreateUserRequest) returns (UserInfo){
+		option (google.api.http) = {
+			post: "/user/v1/created"
+			body:"*"
+		};
+	};
+	rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReply){
+		option (google.api.http) = {
+			put: "/user/v1/update"
+			body:"*"
+		};
+	};
+	rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply){
+		option (google.api.http) = {
+			delete: "/user/v1/{id}"
+		};
+	};
+	rpc GetUser (GetUserRequest) returns (UserInfo){
+		option (google.api.http) = {
+			get: "/user/v1/{id}"
+		};
+	};
+	rpc GetUserByPhone (GetUserByPhoneRequest) returns (UserInfo);
+	rpc ListUser (ListUserRequest) returns (ListUserReply) {
+		option (google.api.http) = {
+			post: "/user/v1/list"
+			body:"*"
+		};
+	}
+	rpc VerifyPassword (VerifPasswordRequest) returns (VerifPasswordReply);
+
+}
+
+message VerifPasswordReply{
+	bool pass =1;
+}
+
+message VerifPasswordRequest{
+	int64 id =1 [(validate.rules).int64.gt = 0];
+	string password =3;
+}
+
+message ListUserRequest {
+	// @inject_tag: `validate:"gte=1"`
+	int64 index = 1   [(validate.rules).int64.gte = 1];
+	// @inject_tag: `validate:"gt=0,max=1000"`
+	int64 size  = 2 [(validate.rules).int64 = {gt: 0, lte: 1000}];
+}
+message ListUserReply {
+	repeated 	UserInfo list=1;
+	page.PageCtx page =2;
+}
+
+message CreateUserRequest {
+	string user_name=1;
+	string pass_word=2 [(validate.rules).string = {min_len: 5, max_len: 10}];
+	Admin admin =3;
+	string phone=4;
+}
+
+enum Admin {
+	USER_NORMAL = 0;
+	USER_ADMIN = 1;
+	USER_SUP_ADMIN = 2;
+}
+
+
+message UserInfo {
+	int64 id =1;
+	string user_name=2;
+	int32 admin =3;
+	string phone=4;
+}
+
+message UpdateUserRequest {
+	int64 id=1 [(validate.rules).int64.gt = 0];
+	string user_name=2;
+	Admin admin =3;
+	string phone=4;
+}
+message UpdateUserReply {}
+
+message DeleteUserRequest {
+	int64 id=1;
+}
+message DeleteUserReply {}
+
+message GetUserRequest {
+	int64 id =1;
+}
+
+
+message GetUserByPhoneRequest {
+	string phone =1;
+}
