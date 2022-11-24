@@ -4,13 +4,10 @@ import (
 	loginV1 "base/api/login/v1"
 	userPb "base/api/user/v1"
 	"base/pkg/jwt"
-	"base/pkg/types"
 	"context"
-	"encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
-	"strconv"
 )
 
 var (
@@ -46,14 +43,6 @@ func (l *LoginUsecase) Login(ctx context.Context, req *LoginReq) (string, error)
 	if !pass.Pass {
 		return "", ErrUserPassword
 	}
-
-	marshal, _ := json.Marshal(user)
-
-	err = l.redisCli.Set(ctx, types.UserInfoRedisPreKey+strconv.Itoa(int(user.Id)), marshal, jwt.ExpiresTime).Err()
-	if err != nil {
-		l.log.Errorf("set redis error:%s", err)
-	}
-
 	return jwt.JwtEncrypt(int(user.Id), user.UserName)
 }
 

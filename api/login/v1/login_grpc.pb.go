@@ -37,7 +37,7 @@ func NewLoginClient(cc grpc.ClientConnInterface) LoginClient {
 
 func (c *loginClient) Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterReply, error) {
 	out := new(RegisterReply)
-	err := c.cc.Invoke(ctx, "/v1.Login/Register", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.login.v1.Login/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *loginClient) Register(ctx context.Context, in *RegisterReq, opts ...grp
 
 func (c *loginClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginReply, error) {
 	out := new(LoginReply)
-	err := c.cc.Invoke(ctx, "/v1.Login/Login", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.login.v1.Login/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *loginClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.Call
 
 func (c *loginClient) Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*LogoutReply, error) {
 	out := new(LogoutReply)
-	err := c.cc.Invoke(ctx, "/v1.Login/Logout", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.login.v1.Login/Logout", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func _Login_Register_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/v1.Login/Register",
+		FullMethod: "/api.login.v1.Login/Register",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServer).Register(ctx, req.(*RegisterReq))
@@ -126,7 +126,7 @@ func _Login_Login_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/v1.Login/Login",
+		FullMethod: "/api.login.v1.Login/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServer).Login(ctx, req.(*LoginReq))
@@ -144,7 +144,7 @@ func _Login_Logout_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/v1.Login/Logout",
+		FullMethod: "/api.login.v1.Login/Logout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServer).Logout(ctx, req.(*LogoutReq))
@@ -156,7 +156,7 @@ func _Login_Logout_Handler(srv interface{}, ctx context.Context, dec func(interf
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Login_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "v1.Login",
+	ServiceName: "api.login.v1.Login",
 	HandlerType: (*LoginServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

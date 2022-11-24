@@ -12,7 +12,6 @@ import (
 // Error 通常错误数据处理
 func Error(c *gin.Context, code int, msg string) {
 	c.JSON(http.StatusOK, types.Resp{
-		Success: false,
 		Code:    code,
 		Message: msg,
 	})
@@ -21,7 +20,6 @@ func Error(c *gin.Context, code int, msg string) {
 // OK 通常成功数据处理
 func OK(c *gin.Context, data interface{}, msg string) {
 	c.JSON(http.StatusOK, types.Resp{
-		Success: true,
 		Data:    data,
 		Message: msg,
 		Code:    http.StatusOK,
@@ -31,7 +29,6 @@ func OK(c *gin.Context, data interface{}, msg string) {
 // PageOK 分页数据处理
 func PageOK(c *gin.Context, result interface{}, count int, pageIndex int, pageSize int, msg string) {
 	c.JSON(http.StatusOK, types.Resp{
-		Success: true,
 		Code:    http.StatusOK,
 		Message: msg,
 		Data:    result,
@@ -56,7 +53,6 @@ func ResponseEncoder() Khttp.EncodeResponseFunc {
 		}
 		codec, _ := Khttp.CodecForRequest(r, "Accept")
 		res := types.Resp{
-			Success: true,
 			Code:    http.StatusOK,
 			Message: "success",
 			Data:    v,
@@ -80,7 +76,6 @@ func ErrorEncode() Khttp.EncodeErrorFunc {
 		se := errors.FromError(err)
 		codec, _ := Khttp.CodecForRequest(r, "Accept")
 		res := types.Resp{
-			Success: false,
 			Code:    int(se.Code),
 			Message: se.Message,
 		}
