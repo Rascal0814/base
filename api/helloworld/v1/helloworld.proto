@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package api.helloworld.v1;
+
+option go_package = "base/api/helloworld/v1;v1";
+import "google/api/annotations.proto";
+
+
+service Helloworld {
+	rpc CreateHelloworld (CreateHelloworldRequest) returns (CreateHelloworldReply);
+	rpc UpdateHelloworld (UpdateHelloworldRequest) returns (UpdateHelloworldReply);
+	rpc DeleteHelloworld (DeleteHelloworldRequest) returns (DeleteHelloworldReply);
+	rpc GetHelloworld (GetHelloworldRequest) returns (GetHelloworldReply){
+		option (google.api.http) = {
+			get: "/hello"
+		};
+	}
+	rpc ListHelloworld (ListHelloworldRequest) returns (ListHelloworldReply);
+}
+
+message CreateHelloworldRequest {}
+message CreateHelloworldReply {}
+
+message UpdateHelloworldRequest {}
+message UpdateHelloworldReply {}
+
+message DeleteHelloworldRequest {}
+message DeleteHelloworldReply {}
+
+message GetHelloworldRequest {}
+message GetHelloworldReply {
+	string name=1;
+}
+
+message ListHelloworldRequest {}
+message ListHelloworldReply {}

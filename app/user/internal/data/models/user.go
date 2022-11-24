@@ -13,7 +13,7 @@ type User struct {
 	UpdatedAt time.Time
 	DeletedAt sql.NullTime `gorm:"index"`
 	// Username holds the value of the "username" field.
-	Username string `json:"username"`
+	Username string `json:"user_name"`
 	// PasswordHash holds the value of the "password_hash" field.
 	PasswordHash string `json:"password_hash"`
 	// admin 0:normal 1:admin 2:super_admin

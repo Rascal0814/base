@@ -59,6 +59,7 @@ func (uc *User) GetUserByPhone(ctx context.Context, p string) (*models.User, err
 // GetUserById ...
 func (uc *User) GetUserById(ctx context.Context, id int64) (*models.User, error) {
 	return uc.repo.FindUserByID(ctx, id)
+
 }
 
 // GetUserPage ...

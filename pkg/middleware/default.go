@@ -16,7 +16,8 @@ func NewWhiteListMatcher() selector.MatchFunc {
 	whiteList := make(map[string]struct{})
 	whiteList["/base.api.login.v1.Login/Login"] = struct{}{}
 	whiteList["/base.api.login.v1.Register/Register"] = struct{}{}
-	whiteList["/v1.Login/Login"] = struct{}{}
+	whiteList["/api.login.v1.Login/Login"] = struct{}{}
+	whiteList["/api.helloworld.v1.Helloworld/GetHelloworld"] = struct{}{}
 	return func(ctx context.Context, operation string) bool {
 		if _, ok := whiteList[operation]; ok {
 			return false

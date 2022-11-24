@@ -1,9 +1,11 @@
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
 server:
   http:
-    addr: 0.0.0.0:8000
+    addr: 0.0.0.0:8010
     timeout: 10s
   grpc:
-    addr: 0.0.0.0:9000
+    addr: 0.0.0.0:9010
     timeout: 10s
 data:
   database:

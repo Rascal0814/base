@@ -19,9 +19,9 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationLoginLogin = "/v1.Login/Login"
-const OperationLoginLogout = "/v1.Login/Logout"
-const OperationLoginRegister = "/v1.Login/Register"
+const OperationLoginLogin = "/api.login.v1.Login/Login"
+const OperationLoginLogout = "/api.login.v1.Login/Logout"
+const OperationLoginRegister = "/api.login.v1.Login/Register"
 
 type LoginHTTPServer interface {
 	Login(context.Context, *LoginReq) (*LoginReply, error)

@@ -29,7 +29,8 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	if err != nil {
 		return nil, nil, err
 	}
-	userRepo := data.NewGreeterRepo(dataData, logger)
+	cmdable := data.NewRedisCmd(confData, logger)
+	userRepo := data.NewGreeterRepo(dataData, logger, cmdable)
 	user := biz.NewUse(userRepo, logger)
 	userService := service.NewUserService(user)
 	grpcServer := server.NewGRPCServer(confServer, userService, logger)

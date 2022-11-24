@@ -1,29 +1,38 @@
 package data
 
 import (
-	"base/app/user/internal/conf"
-	"base/app/user/internal/data/models"
+	userV1 "base/api/user/v1"
+	"base/app/helloworld/internal/conf"
 	"context"
+	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
+	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-redis/redis/v8"
+	consulAPI "github.com/hashicorp/consul/api"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewGreeterRepo, NewRedisCmd)
+var ProviderSet = wire.NewSet(NewData, NewGreeterRepo, NewRedisCmd, NewDiscovery, NewUserServiceClient)
 
 // Data .
 type Data struct {
 	// TODO wrapped database client
-	Orm *gorm.DB
+	Orm      *gorm.DB
+	user     userV1.UserClient
+	redisCli redis.Cmdable
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger, uc userV1.UserClient, redisCmd redis.Cmdable) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
@@ -38,12 +47,12 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	if err != nil {
 		panic("INIT DATABASE ERROR")
 	}
-	db.AutoMigrate(&models.User{})
 	return &Data{
-		Orm: db,
+		Orm:      db,
+		user:     uc,
+		redisCli: redisCmd,
 	}, cleanup, nil
 }
-
 func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 	log := log.NewHelper(log.With(logger, "module", "login-service/biz"))
 	client := redis.NewClient(&redis.Options{
@@ -60,4 +69,33 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 		log.Fatalf("redis connect error: %v", err)
 	}
 	return client
+}
+
+func NewDiscovery(conf *conf.Registry) registry.Discovery {
+	c := consulAPI.DefaultConfig()
+	c.Address = conf.Consul.Address
+	c.Scheme = conf.Consul.Scheme
+	cli, err := consulAPI.NewClient(c)
+	if err != nil {
+		panic(err)
+	}
+	r := consul.New(cli, consul.WithHealthCheck(false))
+	return r
+}
+
+func NewUserServiceClient(r registry.Discovery, tp *tracesdk.TracerProvider) userV1.UserClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint("discovery:///base.user"),
+		grpc.WithDiscovery(r),
+		grpc.WithMiddleware(
+			tracing.Client(tracing.WithTracerProvider(tp)),
+			recovery.Recovery(),
+		),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := userV1.NewUserClient(conn)
+	return c
 }

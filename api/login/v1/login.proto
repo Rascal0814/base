@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package v1;
+package api.login.v1;
 
 option go_package = "base/api/login/v1;v1";
 import "google/api/annotations.proto";
